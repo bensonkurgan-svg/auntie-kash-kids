@@ -1,0 +1,7 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "echo 'No build step required — CSS is plain'"
+    }
+}
