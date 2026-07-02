@@ -1,0 +1,28 @@
+# Railway / Nixpacks build configuration for Auntie Kash Kids Academy
+
+providers = ["php"]
+
+[phases.setup]
+nixPkgs = ["php83", "php83Packages.composer", "nodejs_20"]
+
+[phases.install]
+cmds = [
+    # Guarantee the directories Laravel needs exist before any artisan/composer script runs.
+    "mkdir -p bootstrap/cache storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs storage/app/public",
+    "chmod -R 775 storage bootstrap/cache",
+    # Install WITHOUT running post-install scripts first (so package:discover can't fail on a missing dir)...
+    "composer install --no-dev --optimize-autoloader --no-interaction --no-scripts",
+    # ...then run discovery now that the cache directory definitely exists.
+    "composer dump-autoload --optimize --no-interaction",
+    "php artisan package:discover --ansi"
+]
+
+[phases.build]
+cmds = [
+    "php artisan config:clear",
+    "php artisan route:clear",
+    "php artisan view:clear"
+]
+
+[start]
+cmd = "bash railway-start.sh"
